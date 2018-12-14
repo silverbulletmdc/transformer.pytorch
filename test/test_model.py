@@ -8,7 +8,6 @@ import unittest
 import torch
 
 
-
 def assert_list_equal(l1, l2):
     assert len(l1) == len(l2)
     for i1, i2 in zip(l1, l2):
@@ -45,7 +44,15 @@ class MyTestCase(unittest.TestCase):
     def test_PositionalEncoder(self):
         transfomer = Transformer(512, 10)
         pe = transfomer.get_positional_encoder(10)
-        print(pe)
+        assert_list_equal(pe.shape, [10, 512])
+
+    def test_Transformer(self):
+        transfomer = Transformer(512, 10)
+        input = torch.randn(5, 10, 512)
+        output = torch.randn(5, 8, 512)
+        output = transfomer(input, output)
+        assert_list_equal(output.shape, [5, 8, 10])
+
 
 if __name__ == '__main__':
     unittest.main()

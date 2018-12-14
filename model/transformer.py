@@ -13,8 +13,8 @@ class Transformer(nn.Module):
         self.d_v = d_v
         self.classes = classes
         # Input embedding
-        self.input_embedding = nn.Linear(d_input, dim_model)
-        self.output_embedding = nn.Linear(d_input, dim_model)
+        self.input_embedding = nn.Embedding(d_input, dim_model)
+        self.output_embedding = nn.Embedding(classes, dim_model)
 
         # Build encoder and decoder
         N = 6
@@ -23,7 +23,7 @@ class Transformer(nn.Module):
         self.decoders = nn.Sequential(*[Decoder(dim_model) for i in range(N)])
 
         self.output_linear = nn.Linear(dim_model, classes)
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=2)
 
     def get_positional_encoder(self, L):
         positional_encoder = torch.empty([L, self.dim_model], dtype=torch.float32)
@@ -63,8 +63,8 @@ class Transformer(nn.Module):
         positional_encoder_output = self.get_positional_encoder(output.shape[1])
 
         output += positional_encoder_output
-
-        output = self.decoders(input, output)
+        for decoder in self.decoders:
+            output = decoder(input, output)
 
         output = self.output_linear(output)
         output = self.softmax(output)

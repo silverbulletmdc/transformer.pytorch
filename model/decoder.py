@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from .attention import MultiHeadAttention
 
+
 class Decoder(nn.Module):
     def __init__(self, dim_model):
         super(Decoder, self).__init__()
